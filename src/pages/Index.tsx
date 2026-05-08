@@ -142,12 +142,12 @@ const Index = () => {
         </div>
       </section>
 
-      {/* COMO FUNCIONA */}
+      {/* O QUE ENTREGAMOS */}
       <section className="bg-zinc-900 px-5 py-14 sm:px-8">
         <div className="mx-auto max-w-6xl text-center">
-          <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-primary">Como funciona</p>
+          <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-primary">O que entregamos</p>
           <h2 className="mx-auto mt-3 max-w-2xl font-display text-2xl font-black leading-tight text-white sm:text-4xl">
-            Um sistema simples para gerar oportunidades e transformar atendimento em venda.
+            Um sistema simples para<br className="hidden sm:block" /> marcar visitas na loja
           </h2>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
