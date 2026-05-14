@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useNavigate } from "react-router-dom";
 import { useTracking } from "@/hooks/useTracking";
+import { supabase } from "@/lib/supabase";
 import {
   Form,
   FormControl,
@@ -14,24 +15,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const formSchema = z.object({
   nome: z.string().min(2, "Nome é obrigatório"),
-  loja: z.string().min(2, "Nome da loja é obrigatório"),
-  cidadeEstado: z.string().min(2, "Cidade/Estado é obrigatório"),
-  qtdCarros: z.string().min(1, "Selecione a quantidade de carros"),
-  qtdVendedores: z.string().min(1, "Selecione a quantidade de vendedores"),
+  loja: z.string().min(2, "Nome da loja/Instagram é obrigatório"),
   whatsapp: z.string().min(10, "WhatsApp inválido"),
-  instagram: z.string().min(2, "Instagram é obrigatório"),
-  investeTrafego: z.string().min(1, "Selecione uma opção"),
-  faturamento: z.string().optional(),
+  cidadeEstado: z.string().min(2, "Cidade é obrigatória"),
 });
 
 const Formulario = () => {
@@ -43,13 +32,8 @@ const Formulario = () => {
     defaultValues: {
       nome: "",
       loja: "",
-      cidadeEstado: "",
-      qtdCarros: "",
-      qtdVendedores: "",
       whatsapp: "",
-      instagram: "",
-      investeTrafego: "",
-      faturamento: "",
+      cidadeEstado: "",
     },
   });
 
@@ -57,8 +41,23 @@ const Formulario = () => {
     trackEvent("view_form_page");
   }, []);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     trackEvent("form_submitted", values);
+    
+    try {
+      const { error } = await supabase.from("leads").insert([
+        {
+          nome: values.nome,
+          nome_loja: values.loja,
+          whatsapp: values.whatsapp,
+          cidade_estado: values.cidadeEstado,
+        }
+      ]);
+      if (error) console.error("Erro ao salvar no Supabase:", error);
+    } catch (err) {
+      console.error("Erro inesperado:", err);
+    }
+
     // Redireciona para VSL preservando as UTMs
     navigate(getUtmLink("/vsl"));
   };
@@ -88,7 +87,7 @@ const Formulario = () => {
               name="nome"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-300">Seu Nome</FormLabel>
+                  <FormLabel className="text-zinc-300">Nome</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: João da Silva" className="bg-zinc-950 border-white/10 text-white" {...field} />
                   </FormControl>
@@ -103,9 +102,9 @@ const Formulario = () => {
                 name="loja"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-300">Nome da Loja</FormLabel>
+                    <FormLabel className="text-zinc-300">Nome da loja / Instagram</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ex: Auto Motors" className="bg-zinc-950 border-white/10 text-white" {...field} />
+                      <Input placeholder="Ex: Auto Motors / @automotors" className="bg-zinc-950 border-white/10 text-white" {...field} />
                     </FormControl>
                     <FormMessage className="text-red-400" />
                   </FormItem>
@@ -117,89 +116,9 @@ const Formulario = () => {
                 name="cidadeEstado"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-300">Cidade/Estado</FormLabel>
+                    <FormLabel className="text-zinc-300">Cidade</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ex: São Paulo / SP" className="bg-zinc-950 border-white/10 text-white" {...field} />
-                    </FormControl>
-                    <FormMessage className="text-red-400" />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="qtdCarros"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-zinc-300">Média de carros vendidos/mês</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-zinc-950 border-white/10 text-white">
-                          <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-zinc-900 border-white/10 text-white">
-                        <SelectItem value="menos_de_10">Menos de 10</SelectItem>
-                        <SelectItem value="11_a_30">11 a 30</SelectItem>
-                        <SelectItem value="31_a_60">31 a 60</SelectItem>
-                        <SelectItem value="mais_de_60">Mais de 60</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-red-400" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="qtdVendedores"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-zinc-300">Quantidade de vendedores</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-zinc-950 border-white/10 text-white">
-                          <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-zinc-900 border-white/10 text-white">
-                        <SelectItem value="1_a_2">1 a 2</SelectItem>
-                        <SelectItem value="3_a_5">3 a 5</SelectItem>
-                        <SelectItem value="6_a_10">6 a 10</SelectItem>
-                        <SelectItem value="mais_de_10">Mais de 10</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-red-400" />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="whatsapp"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-zinc-300">WhatsApp</FormLabel>
-                    <FormControl>
-                      <Input placeholder="(11) 90000-0000" type="tel" className="bg-zinc-950 border-white/10 text-white" {...field} />
-                    </FormControl>
-                    <FormMessage className="text-red-400" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="instagram"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-zinc-300">Instagram da Loja</FormLabel>
-                    <FormControl>
-                      <Input placeholder="@sualoja" className="bg-zinc-950 border-white/10 text-white" {...field} />
+                      <Input placeholder="Ex: São Paulo" className="bg-zinc-950 border-white/10 text-white" {...field} />
                     </FormControl>
                     <FormMessage className="text-red-400" />
                   </FormItem>
@@ -209,40 +128,19 @@ const Formulario = () => {
 
             <FormField
               control={form.control}
-              name="investeTrafego"
+              name="whatsapp"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-300">Investe em tráfego atualmente?</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-zinc-950 border-white/10 text-white">
-                        <SelectValue placeholder="Selecione..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-zinc-900 border-white/10 text-white">
-                      <SelectItem value="sim_agencia">Sim, com agência/gestor</SelectItem>
-                      <SelectItem value="sim_conta_propria">Sim, faço por conta própria</SelectItem>
-                      <SelectItem value="nao">Não invisto atualmente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage className="text-red-400" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="faturamento"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-zinc-300">Faturamento médio mensal (Opcional)</FormLabel>
+                  <FormLabel className="text-zinc-300">WhatsApp</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: R$ 300.000,00" className="bg-zinc-950 border-white/10 text-white" {...field} />
+                    <Input placeholder="(11) 90000-0000" type="tel" className="bg-zinc-950 border-white/10 text-white" {...field} />
                   </FormControl>
                   <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
+
+
 
             <Button type="submit" variant="cta" className="w-full h-14 text-lg font-bold shadow-cta">
               Enviar Aplicação
