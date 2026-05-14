@@ -44,21 +44,13 @@ const Formulario = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     trackEvent("form_submitted", values);
     
-    // Captura os parâmetros UTM da URL
-    const params = new URLSearchParams(window.location.search);
-    
     try {
       const { error } = await supabase.from("leads").insert([
         {
           nome: values.nome,
-          nome_loja: values.loja,
+          instagram_loja: values.loja,
           whatsapp: values.whatsapp,
           cidade: values.cidadeEstado,
-          utm_source: params.get("utm_source"),
-          utm_medium: params.get("utm_medium"),
-          utm_campaign: params.get("utm_campaign"),
-          utm_content: params.get("utm_content"),
-          utm_term: params.get("utm_term"),
         }
       ]);
       
@@ -67,7 +59,7 @@ const Formulario = () => {
         return; // Não redireciona se der erro
       }
 
-      // Redireciona para VSL preservando as UTMs apenas se o insert foi bem-sucedido
+      // Redireciona para VSL preservando as UTMs na URL apenas
       navigate(getUtmLink("/vsl"));
     } catch (err) {
       console.error("Erro inesperado:", err);
