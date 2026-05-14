@@ -58,7 +58,7 @@ const Index = () => {
               className="shadow-cta hover:scale-105 transition-transform duration-300 w-full sm:w-auto"
             >
               <Link to={getUtmLink("/formulario")}>
-                Quero Aplicar Agora <ArrowRight className="ml-2 h-5 w-5" />
+                Solicitar Análise da Minha Loja <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <p className="text-xs text-zinc-500 mt-1">Vagas limitadas por região</p>
