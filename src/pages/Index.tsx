@@ -13,8 +13,8 @@ const flow = [
 
 const faqs = [
   {
-    question: "Atendem qualquer loja?",
-    answer: "Não, apenas lojas que podem investir a partir de R$ 3.000 por mês.",
+    question: "Qualquer loja pode participar?",
+    answer: "Nosso modelo foi desenvolvido para atender lojas que possam investir a partir de R$ 3.000,00 por mês.",
   },
   {
     question: "É só tráfego pago?",
@@ -199,7 +199,7 @@ const Index = () => {
           </h2>
           <h3 className="text-lg font-semibold text-primary mb-4">Esse anúncio sairá do ar em breve.</h3>
           <p className="text-base text-zinc-400 mb-8">
-            Selecionamos apenas lojas com alto potencial de parceria com a AutoTop Marketing.
+            A seleção de parcerias é feita priorizando empresas que estejam alinhadas com nossos critérios e padrão de atendimento.
           </p>
 
           <Button
